@@ -2,8 +2,6 @@ package ch.fhnw.algd.u4;
 
 import java.util.Random;
 
-import com.sun.xml.internal.ws.util.StringUtils;
-
 public class Skyscrapers {
     final static Random R = new Random();
    
@@ -12,6 +10,42 @@ public class Skyscrapers {
         printBlock(block);
     }
     
+    /**
+     * Generiert einen quadratischen Block der Grösse {@link size} nach dem Schema: 
+     * 1 2 3 4
+     * 2 3 4 1
+     * 3 4 1 2
+     * 4 1 2 3
+     * 
+     * @param size
+     * @return block
+     */
+    public static int[][] generateBasicBlock(int size) {
+        int[][] block = new int[size][size];
+        for (int x = 0; x < size; x++) {
+            for (int y = 0; y < size; y++) {
+                block[x][y] = ((x + y) % size) + 1;
+            }
+        }
+        return block;
+    }
+    
+    /**
+     * Counts the amount of visible skyscrapers in each row, column from each side
+     * read matrix as:
+     * North array[0] left to right
+     * East array[1] top to bottom
+     * South array[2] left to right
+     * West array[3] top to bottom
+     * 
+     * @param block
+     * @return
+     */
+    public static int[][] calculateVisibilities(int[][] block) {
+        int[][] vis = new int[4][block.length];
+//        for 
+    }
+
     public static int[][] generateRandomBlock() {
         int size = R.nextInt(500);
         int[][] block = generateBasicBlock(size);
@@ -41,25 +75,6 @@ public class Skyscrapers {
         return block;
     }
     
-    /**
-     * Generiert einen quadratischen Block der Grösse {@link size} nach dem Schema: 
-     * 1 2 3 4
-     * 2 3 4 1
-     * 3 4 1 2
-     * 4 1 2 3
-     * 
-     * @param size
-     * @return block
-     */
-    public static int[][] generateBasicBlock(int size) {
-        int[][] block = new int[size][size];
-        for (int x = 0; x < size; x++) {
-            for (int y = 0; y < size; y++) {
-                block[x][y] = ((x + y) % size) + 1;
-            }
-        }
-        return block;
-    }
     
     public static void printBlock(int[][] block) {
         System.out.println("----------------------");
