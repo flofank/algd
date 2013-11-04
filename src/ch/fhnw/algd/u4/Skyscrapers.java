@@ -4,18 +4,20 @@ import java.util.Random;
 
 public class Skyscrapers {
     final static Random R = new Random();
-   
+
     public static void main(String[] args) {
+        double start = System.currentTimeMillis();
         int[][] block = generateRandomBlock();
+        int[][] vis = calculateVisibilities(block);
+        System.out.println(System.currentTimeMillis() - start + "ms");
         printBlock(block);
+        printBlock(vis);
+        System.out.println(System.currentTimeMillis() - start + "ms");
     }
-    
+
     /**
-     * Generiert einen quadratischen Block der Grösse {@link size} nach dem Schema: 
-     * 1 2 3 4
-     * 2 3 4 1
-     * 3 4 1 2
-     * 4 1 2 3
+     * Generiert einen quadratischen Block der Grösse {@link size} nach dem Schema: 1 2 3 4 2 3 4 1
+     * 3 4 1 2 4 1 2 3
      * 
      * @param size
      * @return block
@@ -29,32 +31,17 @@ public class Skyscrapers {
         }
         return block;
     }
-    
-    /**
-     * Counts the amount of visible skyscrapers in each row, column from each side
-     * read matrix as:
-     * North array[0] left to right
-     * East array[1] top to bottom
-     * South array[2] left to right
-     * West array[3] top to bottom
-     * 
-     * @param block
-     * @return
-     */
-    public static int[][] calculateVisibilities(int[][] block) {
-        int[][] vis = new int[4][block.length];
-//        for 
-    }
 
     public static int[][] generateRandomBlock() {
         int size = R.nextInt(500);
         int[][] block = generateBasicBlock(size);
-        block = shuffleBlock(block, 20000);
+        block = shuffleBlock(block);
         return block;
     }
-    
-    public static int[][] shuffleBlock(int[][] block, int shuffles) {
+
+    public static int[][] shuffleBlock(int[][] block) {
         int size = block.length;
+        int shuffles = size * 2;
         for (int i = 0; i < shuffles; i++) {
             // Shuffle rows
             int row1 = R.nextInt(size);
@@ -71,11 +58,10 @@ public class Skyscrapers {
                 block[j][col1] = block[j][col2];
                 block[j][col2] = buf;
             }
-        }        
+        }
         return block;
     }
-    
-    
+
     public static void printBlock(int[][] block) {
         System.out.println("----------------------");
         for (int x = 0; x < block.length; x++) {
@@ -85,5 +71,54 @@ public class Skyscrapers {
             System.out.print("\n");
         }
         System.out.println("----------------------");
+    }
+
+    /**
+     * Counts the amount of visible skyscrapers in each row, column from each side.
+     * 
+     * @param block
+     * @return
+     */
+    public static int[][] calculateVisibilities(int[][] block) {
+        int[][] vis = new int[block.length + 2][block.length + 2];
+        // calculate east - west visibilities
+        for (int i = 0; i < block.length; i++) {
+            int visW = 0;
+            int maxW = 0;
+            int visE = 0;
+            int maxE = 0;
+            for (int j = 0; j < block.length; j++) {
+                if (block[i][j] > maxW) {
+                    visW++;
+                    maxW = block[i][j];
+                }
+                if (block[i][block.length - j - 1] > maxE) {
+                    visE++;
+                    maxE = block[i][block.length - j - 1];
+                }
+            }
+            vis[i + 1][block.length + 1] = visE;
+            vis[i + 1][0] = visW;
+        }
+        // calculate north - south visibilities
+        for (int i = 0; i < block.length; i++) {
+            int visN = 0;
+            int maxN = 0;
+            int visS = 0;
+            int maxS = 0;
+            for (int j = 0; j < block.length; j++) {
+                if (block[j][i] > maxN) {
+                    visN++;
+                    maxN = block[j][i];
+                }
+                if (block[block.length - j - 1][i] > maxS) {
+                    visS++;
+                    maxS = block[block.length - j - 1][i];
+                }
+            }
+            vis[0][i + 1] = visN;
+            vis[block.length + 1][i + 1] = visS;
+        }
+        return vis;
     }
 }
